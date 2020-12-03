@@ -51,6 +51,9 @@ elseif(SYCL_IMPL STREQUAL "triSYCL")
 endif()
 
 set(benchmarks
+  group/group_reduce.cpp
+  group/group_any_of.cpp
+  group/group_inclusive_scan.cpp
   micro/arith.cpp
   micro/DRAM.cpp
   micro/host_device_bandwidth.cpp
