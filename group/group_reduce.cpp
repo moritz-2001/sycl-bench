@@ -64,6 +64,7 @@ int main(int argc, char** argv) {
   BenchmarkApp app(argc, argv);
 
   app.run<MicroBenchGroupReduce<int>>();
+  app.run<MicroBenchGroupReduce<long long>>();
   app.run<MicroBenchGroupReduce<float>>();
   app.run<MicroBenchGroupReduce<double>>();
   return 0;
