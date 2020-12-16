@@ -81,15 +81,12 @@ int main(int argc, char** argv) {
   app.run<MicroBenchGroupReduce<float>>();
   app.run<MicroBenchGroupReduce<double>>();
   app.run<MicroBenchGroupReduce<cl::sycl::vec<int, 1>, true>>();
-  app.run<MicroBenchGroupReduce<cl::sycl::vec<char, 4>, true>>();
+  app.run<MicroBenchGroupReduce<cl::sycl::vec<unsigned char, 4>, true>>();
   app.run<MicroBenchGroupReduce<cl::sycl::vec<int, 4>, true>>();
   app.run<MicroBenchGroupReduce<cl::sycl::vec<int, 8>, true>>();
-  app.run<MicroBenchGroupReduce<cl::sycl::vec<int, 16>, true>>();
-  //app.run<MicroBenchGroupReduce<cl::sycl::vec<long long, 16>, true>>();
   app.run<MicroBenchGroupReduce<cl::sycl::vec<float, 1>, true>>();
+  app.run<MicroBenchGroupReduce<cl::sycl::vec<double, 2>, true>>();
   app.run<MicroBenchGroupReduce<cl::sycl::vec<float, 4>, true>>();
   app.run<MicroBenchGroupReduce<cl::sycl::vec<float, 8>, true>>();
-  app.run<MicroBenchGroupReduce<cl::sycl::vec<float, 16>, true>>();
-  //app.run<MicroBenchGroupReduce<cl::sycl::vec<double, 16>, true>>();
   return 0;
 }

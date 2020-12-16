@@ -23,18 +23,18 @@ MAKE_READABLE_TYPENAME(unsigned long long, "uint64")
 MAKE_READABLE_TYPENAME(float, "fp32")
 MAKE_READABLE_TYPENAME(double, "fp64")
 
-template<> struct ReadableTypename<cl::sycl::vec<char, 1>> { static const char* name; };
-const char* ReadableTypename<cl::sycl::vec<char,  1>>::name = "vec<int8:1>";
-template<> struct ReadableTypename<cl::sycl::vec<char, 2>> { static const char* name; };
-const char* ReadableTypename<cl::sycl::vec<char,  2>>::name = "vec<int8:2>";
-template<> struct ReadableTypename<cl::sycl::vec<char, 3>> { static const char* name; };
-const char* ReadableTypename<cl::sycl::vec<char,  3>>::name = "vec<int8:3>";
-template<> struct ReadableTypename<cl::sycl::vec<char, 4>> { static const char* name; };
-const char* ReadableTypename<cl::sycl::vec<char,  4>>::name = "vec<int8:4>";
-template<> struct ReadableTypename<cl::sycl::vec<char, 8>> { static const char* name; };
-const char* ReadableTypename<cl::sycl::vec<char,  8>>::name = "vec<int8:8>";
-template<> struct ReadableTypename<cl::sycl::vec<char, 16>> { static const char* name; };
-const char* ReadableTypename<cl::sycl::vec<char, 16>>::name = "vec<int8:16>";
+template<> struct ReadableTypename<cl::sycl::vec<unsigned char, 1>> { static const char* name; };
+const char* ReadableTypename<cl::sycl::vec<unsigned char,  1>>::name = "vec<uint8:1>";
+template<> struct ReadableTypename<cl::sycl::vec<unsigned char, 2>> { static const char* name; };
+const char* ReadableTypename<cl::sycl::vec<unsigned char,  2>>::name = "vec<uint8:2>";
+template<> struct ReadableTypename<cl::sycl::vec<unsigned char, 3>> { static const char* name; };
+const char* ReadableTypename<cl::sycl::vec<unsigned char,  3>>::name = "vec<uint8:3>";
+template<> struct ReadableTypename<cl::sycl::vec<unsigned char, 4>> { static const char* name; };
+const char* ReadableTypename<cl::sycl::vec<unsigned char,  4>>::name = "vec<uint8:4>";
+template<> struct ReadableTypename<cl::sycl::vec<unsigned char, 8>> { static const char* name; };
+const char* ReadableTypename<cl::sycl::vec<unsigned char,  8>>::name = "vec<uint8:8>";
+template<> struct ReadableTypename<cl::sycl::vec<unsigned char, 16>> { static const char* name; };
+const char* ReadableTypename<cl::sycl::vec<unsigned char, 16>>::name = "vec<uint8:16>";
 
 template<> struct ReadableTypename<cl::sycl::vec<int, 1>> { static const char* name; };
 const char* ReadableTypename<cl::sycl::vec<int,  1>>::name = "vec<int32:1>";
