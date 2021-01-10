@@ -52,8 +52,10 @@ endif()
 
 set(benchmarks
   group/group_reduce.cpp
+  group/group_reduce_ptr.cpp
   group/group_any_of.cpp
   group/group_inclusive_scan.cpp
+  group/group_inclusive_scan_ptr.cpp
   micro/arith.cpp
   micro/DRAM.cpp
   micro/host_device_bandwidth.cpp
