@@ -150,7 +150,7 @@ public:
 
             for(int i = 1; i <= Iterations; ++i) {
               DataT j = initialize_type<DataT>(1);
-              d = s::group_reduce(g, j, [](DataT a, DataT b) { return a+b; });
+              d = s::group_reduce(g, j, s::plus<DataT>());
             }
 
             if (gid == 0)

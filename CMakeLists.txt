@@ -24,6 +24,9 @@ endif()
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/polybench/common)
 
+find_package(xsimd REQUIRED CONFIG)
+include_directories(${xsimd_INCLUDE_DIR})
+
 set(supported_implementations
   ComputeCpp
   hipSYCL
@@ -53,6 +56,7 @@ endif()
 set(benchmarks
   group/group_reduce.cpp
   group/group_reduce_ptr.cpp
+  group/scoped_group_reduce_ptr.cpp
   group/group_any_of.cpp
   group/group_inclusive_scan.cpp
   group/group_inclusive_scan_ptr.cpp
