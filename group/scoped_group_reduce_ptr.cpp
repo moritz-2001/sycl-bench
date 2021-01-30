@@ -139,18 +139,18 @@ public:
   }
 
   void run(std::vector<cl::sycl::event>& events) {
-    size_t num_groups = (args.problem_size + args.local_size - 1) / args.local_size;
+    size_t num_groups = 100;
+    size_t problem_size = args.problem_size;
     events.push_back(args.device_queue.submit([&](cl::sycl::handler& cgh) {
       auto in = input_buf.template get_access<s::access::mode::read>(cgh);
       auto out = output_buf.template get_access<s::access::mode::discard_write>(cgh);
 
       cgh.parallel<ScopedMicroBenchGroupReducePtrKernel<DataT, Iterations>>(
           s::range<1>{num_groups}, s::range<1>{args.local_size}, [=](s::group<1> g, s::physical_item<1> pitem) {
-            g.single_item([&]() {
-              DataT d = initialize_type<DataT>(0);
-              size_t gid = g.get_linear();
+              DataT d = initialize_type<DataT>(-1);
+              size_t gid = pitem.get_global_id(0);
               auto start = in.get_pointer();
-              auto end = start + static_cast<size_t>(pitem.get_global_range().size());
+              auto end = start + static_cast<size_t>(problem_size);
 
               for(int i = 1; i <= Iterations; ++i) {
                 d = s::detail::leader_reduce(g, start.get(), end.get(), s::plus<DataT>());
@@ -160,7 +160,6 @@ public:
               if (gid == 0)
                 out[0] = d;
             });
-          });
     }));
   }
 
