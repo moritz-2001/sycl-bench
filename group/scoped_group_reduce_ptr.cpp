@@ -139,7 +139,7 @@ public:
   }
 
   void run(std::vector<cl::sycl::event>& events) {
-    size_t num_groups = 100;
+    size_t num_groups = args.local_size;
     size_t problem_size = args.problem_size;
     events.push_back(args.device_queue.submit([&](cl::sycl::handler& cgh) {
       auto in = input_buf.template get_access<s::access::mode::read>(cgh);
@@ -154,7 +154,6 @@ public:
 
               for(int i = 1; i <= Iterations; ++i) {
                 d = s::detail::leader_reduce(g, start.get(), end.get(), s::plus<DataT>());
-                //d = s::detail::reduce(g, start.get(), end.get(), s::plus<DataT>());
               }
 
               if (gid == 0)

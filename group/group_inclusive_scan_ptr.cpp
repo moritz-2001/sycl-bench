@@ -145,7 +145,7 @@ public:
   }
 
   void run(std::vector<cl::sycl::event>& events) {
-    size_t num_groups = (args.problem_size + args.local_size - 1) / args.local_size;
+    size_t num_groups = args.local_size;
     size_t problem_size = args.problem_size;
     events.push_back(args.device_queue.submit([&](cl::sycl::handler& cgh) {
       auto in = input_buf.template get_access<s::access::mode::read>(cgh);
