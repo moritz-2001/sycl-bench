@@ -55,12 +55,14 @@ endif()
 
 set(benchmarks
    group/group_reduce.cpp
+   group/group_reduce_cub.cpp
    group/group_reduce_ptr.cpp
    group/scoped_group_reduce_ptr.cpp
    group/group_any_of.cpp
    group/group_any_of_ptr.cpp
    group/scoped_group_any_of_ptr.cpp
    group/group_inclusive_scan.cpp
+   group/group_inclusive_scan_cub.cpp
    group/group_inclusive_scan_ptr.cpp
    group/scoped_group_inclusive_scan_ptr.cpp
    micro/arith.cpp
