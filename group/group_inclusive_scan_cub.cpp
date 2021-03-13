@@ -46,7 +46,7 @@ public:
   void run(std::vector<cl::sycl::event>& events) {
     size_t num_groups = (args.problem_size + args.local_size - 1) / args.local_size;
 #ifdef HIPSYCL_PLATFORM_CUDA
-    kernel<<<args.local_size, num_groups>>>();
+    kernel<<<num_groups, args.local_size>>>();
     cudaDeviceSynchronize();
 #endif
   }
