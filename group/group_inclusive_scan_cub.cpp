@@ -2,10 +2,6 @@
 #include<cub/cub.cuh>
 
 namespace s = cl::sycl;
-
-template <typename DataT, int Iterations, int Blocksize>
-class MicroBenchGroupInclusiveScanKernel;
-
 /**
  * Microbenchmark benchmarking group_reduce
  */
