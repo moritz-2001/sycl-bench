@@ -11,7 +11,7 @@ class MicroBenchGroupInclusiveScan {
 protected:
   BenchmarkArgs args;
 
-  PrefetchedBuffer<DataT, 1> output_buf;
+  std::vector<DataT> results;
 
   using BlockScan = rocprim::block_scan<DataT, Blocksize, Algorithm>;
 
@@ -21,31 +21,51 @@ public:
   void setup() {
     size_t num_groups = (args.problem_size + args.local_size - 1) / args.local_size;
 
-    output_buf.initialize(args.device_queue, s::range<1>(num_groups * args.local_size));
+    results.resize(num_groups * args.local_size);
   }
 
   __global__ 
-  static void kernel() {
+  static void kernel(DataT* out) {
     DataT d = 0;
+    size_t gid = hipThreadIdx_x + hipBlockIdx_x*hipBlockDim_x;
 
     __shared__ typename BlockScan::storage_type temp_storage;
 
     for(int i = 1; i <= Iterations; ++i) {
-      DataT j = 1;
-      BlockScan().inclusive_scan(j, d, temp_storage, rocprim::plus<DataT>());
+      DataT j = i;
+      BlockScan().inclusive_scan(j, *(out+gid), temp_storage, rocprim::plus<DataT>());
     }
-    __syncthreads();
   }
 
   void run(std::vector<cl::sycl::event>& events) {
     size_t num_groups = (args.problem_size + args.local_size - 1) / args.local_size;
+
+    std::cout << getBenchmarkName() << ":" << sizeof(typename BlockScan::storage_type) << std::endl;
+
 #ifdef HIPSYCL_PLATFORM_HIP
-    hipLaunchKernelGGL(kernel, dim3(num_groups), dim3(args.local_size), 0, 0);
+    DataT* d_out_ptr = nullptr;
+    hipMalloc(&d_out_ptr, sizeof(DataT) * num_groups * args.local_size);
+
+    hipLaunchKernelGGL(kernel, dim3(num_groups), dim3(args.local_size), 0, 0, d_out_ptr);
+
     hipDeviceSynchronize();
+    hipMemcpy(results.data(), d_out_ptr, sizeof(DataT) * num_groups * args.local_size, hipMemcpyDeviceToHost);
 #endif
   }
 
   bool verify(VerificationSetting& ver) {
+    DataT expected = 0;
+
+    for(size_t i = 0; i < args.problem_size; ++i) {
+      if(i%args.local_size == 0)
+        expected = 0;
+      expected += Iterations;
+      if(results[i] != expected) {
+        std::cout << i << ":" << expected << ":" << results[i] << std::endl;
+        return false;
+      }
+    }
+
     return true;
   }
 

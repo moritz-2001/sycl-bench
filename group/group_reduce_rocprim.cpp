@@ -12,7 +12,7 @@ class MicroBenchGroupReduce {
 protected:
   BenchmarkArgs args;
 
-  PrefetchedBuffer<DataT, 1> output_buf;
+  DataT result;
 
   using BlockReduce = rocprim::block_reduce<DataT, Blocksize, Algorithm>;
 
@@ -20,33 +20,46 @@ public:
   MicroBenchGroupReduce(const BenchmarkArgs& _args) : args(_args) {}
 
   void setup() {
-    output_buf.initialize(args.device_queue, s::range<1>(1));
   }
 
   __global__
-  static void kernel() {
+  static void kernel(DataT* out) {
     DataT d = 0;
 
     __shared__ typename BlockReduce::storage_type temp_storage;
     DataT* scratch = reinterpret_cast<DataT*>(&temp_storage);
 
     for(int i = 1; i <= Iterations; ++i) {
-      DataT j = i;
+      DataT j = 1;
       BlockReduce().reduce(j, d, temp_storage, rocprim::plus<DataT>());
     }
+
+    __syncthreads();
+
+    if (blockIdx.x*blockDim.x+threadIdx.x == 0)
+      *out = d;
   }
 
   void run(std::vector<cl::sycl::event>& events) {
     size_t num_groups = (args.problem_size + args.local_size - 1) / args.local_size;
 
 #ifdef HIPSYCL_PLATFORM_HIP
-    hipLaunchKernelGGL(kernel, dim3(num_groups), dim3(args.local_size), 0, 0);
+    DataT* d_out_ptr = nullptr;
+    hipMalloc(&d_out_ptr, sizeof(DataT));
+
+    hipLaunchKernelGGL(kernel, dim3(num_groups), dim3(args.local_size), 0, 0, d_out_ptr);
+
     hipDeviceSynchronize();
+    hipMemcpy(&result, d_out_ptr, sizeof(DataT), hipMemcpyDeviceToHost);
 #endif
   }
 
   bool verify(VerificationSetting& ver) {
-    return true;
+    DataT expected = args.local_size;
+
+    if (result != expected)
+	   std::cout << expected << ":" << result << std::endl;
+    return result == expected;
   }
 
   static std::string getBenchmarkName() {

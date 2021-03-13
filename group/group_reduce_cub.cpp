@@ -11,7 +11,7 @@ class MicroBenchGroupReduce {
 protected:
   BenchmarkArgs args;
 
-  PrefetchedBuffer<DataT, 1> output_buf;
+  DataT result;
 
   using BlockReduce = cub::BlockReduce<DataT, Blocksize, Algorithm>;
 
@@ -19,11 +19,10 @@ public:
   MicroBenchGroupReduce(const BenchmarkArgs& _args) : args(_args) {}
 
   void setup() {
-    output_buf.initialize(args.device_queue, s::range<1>(1));
   }
 
   __global__ 
-  static void kernel() {
+  static void kernel(DataT* out) {
     DataT d = 0;
 
     __shared__ typename BlockReduce::TempStorage temp_storage;
@@ -37,23 +36,31 @@ public:
     if (threadIdx.x == 0)
       scratch[0] = d;
     __syncthreads();
-    
-    d = scratch[0];
 
-    //printf("%d: %d\n", blockIdx.x, d);
+    if (blockIdx.x*blockDim.x+threadIdx.x == 0)
+      *out = scratch[0];
   }
 
   void run(std::vector<cl::sycl::event>& events) {
     size_t num_groups = (args.problem_size + args.local_size - 1) / args.local_size;
 
 #ifdef HIPSYCL_PLATFORM_CUDA
-    kernel<<<num_groups, args.local_size>>>();
+    DataT* d_out_ptr = nullptr;
+    cudaMalloc(&d_out_ptr, sizeof(DataT));
+
+    kernel<<<num_groups, args.local_size>>>(d_out_ptr);
+
     cudaDeviceSynchronize();
+    cudaMemcpy(&result, d_out_ptr, sizeof(DataT), cudaMemcpyDeviceToHost);
 #endif
   }
 
   bool verify(VerificationSetting& ver) {
-    return true;
+    DataT expected = args.local_size;
+
+    if (result != expected)
+	   std::cout << expected << ":" << result << std::endl;
+    return result == expected;
   }
 
   static std::string getBenchmarkName() {

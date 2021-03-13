@@ -10,7 +10,7 @@ class MicroBenchGroupInclusiveScan {
 protected:
   BenchmarkArgs args;
 
-  PrefetchedBuffer<DataT, 1> output_buf;
+  std::vector<DataT> results;
 
   using BlockScan = cub::BlockScan<DataT, Blocksize, Algorithm>;
 
@@ -20,34 +20,46 @@ public:
   void setup() {
     size_t num_groups = (args.problem_size + args.local_size - 1) / args.local_size;
 
-    output_buf.initialize(args.device_queue, s::range<1>(num_groups * args.local_size));
+    results.resize(num_groups * args.local_size);
   }
 
   __global__ 
   static void kernel() {
-    DataT d = 0;
-
     __shared__ typename BlockScan::TempStorage temp_storage;
-    DataT* scratch = reinterpret_cast<DataT*>(&temp_storage);
+    size_t gid = threadIdx.x + blockIdx.x*blockDim.x;
 
     for(int i = 1; i <= Iterations; ++i) {
-      DataT j = 1;
-      BlockScan(temp_storage).InclusiveSum(j, d);
+      DataT j = i;
+      BlockScan(temp_storage).InclusiveSum(j, *(out+gid));
     }
-    __syncthreads();
-
-    //printf("%d: %d\n", threadIdx.x, d);
   }
 
   void run(std::vector<cl::sycl::event>& events) {
     size_t num_groups = (args.problem_size + args.local_size - 1) / args.local_size;
 #ifdef HIPSYCL_PLATFORM_CUDA
-    kernel<<<num_groups, args.local_size>>>();
+    DataT* d_out_ptr = nullptr;
+    cudaMalloc(&d_out_ptr, sizeof(DataT) * num_groups * args.local_size);
+
+    kernel<<<num_groups, args.local_size>>>(d_out_ptr);
+
     cudaDeviceSynchronize();
+    cudaMemcpy(&result, d_out_ptr, sizeof(DataT) * num_groups * args.local_size, cudaMemcpyDeviceToHost);
 #endif
   }
 
   bool verify(VerificationSetting& ver) {
+    DataT expected = 0;
+
+    for(size_t i = 0; i < args.problem_size; ++i) {
+      if(i%args.local_size == 0)
+        expected = 0;
+      expected += Iterations;
+      if(results[i] != expected) {
+        std::cout << i << ":" << expected << ":" << results[i] << std::endl;
+        return false;
+      }
+    }
+
     return true;
   }
 
