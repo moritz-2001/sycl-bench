@@ -24,7 +24,7 @@ public:
   }
 
   __global__ 
-  static void kernel() {
+  static void kernel(DataT* out) {
     __shared__ typename BlockScan::TempStorage temp_storage;
     size_t gid = threadIdx.x + blockIdx.x*blockDim.x;
 
@@ -43,7 +43,7 @@ public:
     kernel<<<num_groups, args.local_size>>>(d_out_ptr);
 
     cudaDeviceSynchronize();
-    cudaMemcpy(&result, d_out_ptr, sizeof(DataT) * num_groups * args.local_size, cudaMemcpyDeviceToHost);
+    cudaMemcpy(results.data(), d_out_ptr, sizeof(DataT) * num_groups * args.local_size, cudaMemcpyDeviceToHost);
 #endif
   }
 

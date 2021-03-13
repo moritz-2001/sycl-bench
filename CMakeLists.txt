@@ -53,13 +53,13 @@ elseif(SYCL_IMPL STREQUAL "triSYCL")
   find_package(TriSYCL MODULE REQUIRED)
 endif()
 
-find_package(rocprim REQUIRED CONFIG)
+#find_package(rocprim REQUIRED CONFIG)
 
 set(benchmarks
-  #group/group_reduce_cub.cpp
-   group/group_reduce_rocprim.cpp
-  #group/group_inclusive_scan_cub.cpp
-   group/group_inclusive_scan_rocprim.cpp
+   group/group_reduce_cub.cpp
+   #group/group_reduce_rocprim.cpp
+   group/group_inclusive_scan_cub.cpp
+   #group/group_inclusive_scan_rocprim.cpp
    group/group_reduce.cpp
    group/group_reduce_ptr.cpp
    group/scoped_group_reduce_ptr.cpp
@@ -114,8 +114,6 @@ foreach(benchmark IN LISTS benchmarks)
   get_filename_component(target ${benchmark} NAME_WE)
 
   add_executable(${target} ${benchmark})
-
-  #target_link_libraries(${target} roc::rocprim)
 
   if(SYCL_IMPL STREQUAL "ComputeCpp" OR SYCL_IMPL STREQUAL "hipSYCL")
     add_sycl_to_target(TARGET ${target} SOURCES ${benchmark})
