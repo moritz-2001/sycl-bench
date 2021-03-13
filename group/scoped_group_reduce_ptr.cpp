@@ -184,16 +184,16 @@ int main(int argc, char** argv) {
   BenchmarkApp app(argc, argv);
 
   app.run<ScopedMicroBenchGroupReducePtr<int>>();
-  //app.run<ScopedMicroBenchGroupReducePtr<long long>>();
-  //app.run<ScopedMicroBenchGroupReducePtr<float>>();
-  //app.run<ScopedMicroBenchGroupReducePtr<double>>();
-  //app.run<ScopedMicroBenchGroupReducePtr<cl::sycl::vec<int, 1>, true>>();
-  //app.run<ScopedMicroBenchGroupReducePtr<cl::sycl::vec<unsigned char, 4>, true>>();
-  //app.run<ScopedMicroBenchGroupReducePtr<cl::sycl::vec<int, 4>, true>>();
-  //app.run<ScopedMicroBenchGroupReducePtr<cl::sycl::vec<int, 8>, true>>();
-  //app.run<ScopedMicroBenchGroupReducePtr<cl::sycl::vec<float, 1>, true>>();
-  //app.run<ScopedMicroBenchGroupReducePtr<cl::sycl::vec<double, 2>, true>>();
-  //app.run<ScopedMicroBenchGroupReducePtr<cl::sycl::vec<float, 4>, true>>();
-  //app.run<ScopedMicroBenchGroupReducePtr<cl::sycl::vec<float, 8>, true>>();
+  app.run<ScopedMicroBenchGroupReducePtr<long long>>();
+  app.run<ScopedMicroBenchGroupReducePtr<float>>();
+  app.run<ScopedMicroBenchGroupReducePtr<double>>();
+  app.run<ScopedMicroBenchGroupReducePtr<cl::sycl::vec<int, 1>, true>>();
+  app.run<ScopedMicroBenchGroupReducePtr<cl::sycl::vec<unsigned char, 4>, true>>();
+  app.run<ScopedMicroBenchGroupReducePtr<cl::sycl::vec<int, 4>, true>>();
+  app.run<ScopedMicroBenchGroupReducePtr<cl::sycl::vec<int, 8>, true>>();
+  app.run<ScopedMicroBenchGroupReducePtr<cl::sycl::vec<float, 1>, true>>();
+  app.run<ScopedMicroBenchGroupReducePtr<cl::sycl::vec<double, 2>, true>>();
+  app.run<ScopedMicroBenchGroupReducePtr<cl::sycl::vec<float, 4>, true>>();
+  app.run<ScopedMicroBenchGroupReducePtr<cl::sycl::vec<float, 8>, true>>();
   return 0;
 }
