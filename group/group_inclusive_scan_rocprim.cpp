@@ -34,13 +34,12 @@ public:
     for(int i = 1; i <= Iterations; ++i) {
       DataT j = i;
       BlockScan().inclusive_scan(j, *(out+gid), temp_storage, rocprim::plus<DataT>());
+      __syncthreads();
     }
   }
 
   void run(std::vector<cl::sycl::event>& events) {
     size_t num_groups = (args.problem_size + args.local_size - 1) / args.local_size;
-
-    std::cout << getBenchmarkName() << ":" << sizeof(typename BlockScan::storage_type) << std::endl;
 
 #ifdef HIPSYCL_PLATFORM_HIP
     DataT* d_out_ptr = nullptr;

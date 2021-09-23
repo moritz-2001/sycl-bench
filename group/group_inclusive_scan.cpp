@@ -5,29 +5,29 @@ namespace s = cl::sycl;
 template <typename DataT, int Iterations>
 class MicroBenchGroupInclusiveScanKernel;
 
-template<typename T>
+template <typename T>
 using elementType = std::remove_reference_t<decltype(T{}.s0())>;
 
-template<typename T, int N>
+template <typename T, int N>
 std::string type_to_string(s::vec<T, N> v) {
   std::stringstream ss{};
 
   ss << "(";
-  if constexpr (1 <= N)
+  if constexpr(1 <= N)
     ss << +v.s0();
-  if constexpr (2 <= N)
+  if constexpr(2 <= N)
     ss << ", " << +v.s1();
-  if constexpr (3 <= N)
+  if constexpr(3 <= N)
     ss << ", " << +v.s2();
-  if constexpr (4 <= N)
+  if constexpr(4 <= N)
     ss << ", " << +v.s3();
-  if constexpr (8 <= N) {
+  if constexpr(8 <= N) {
     ss << ", " << +v.s4();
     ss << ", " << +v.s5();
     ss << ", " << +v.s6();
     ss << ", " << +v.s7();
   }
-  if constexpr (16 <= N) {
+  if constexpr(16 <= N) {
     ss << ", " << +v.s8();
     ss << ", " << +v.s9();
     ss << ", " << +v.sA();
@@ -42,7 +42,7 @@ std::string type_to_string(s::vec<T, N> v) {
   return ss.str();
 }
 
-template<typename T>
+template <typename T>
 std::string type_to_string(T x) {
   std::stringstream ss{};
   ss << +x;
@@ -50,57 +50,53 @@ std::string type_to_string(T x) {
   return ss.str();
 }
 
-template<typename T, typename std::enable_if_t<std::is_arithmetic_v<T>, int> = 0>
-HIPSYCL_KERNEL_TARGET
-T initialize_type(T init) {
+template <typename T, typename std::enable_if_t<std::is_arithmetic_v<T>, int> = 0>
+HIPSYCL_KERNEL_TARGET T initialize_type(T init) {
   return init;
 }
 
-template<typename T, typename std::enable_if_t<!std::is_arithmetic_v<T>, int> = 0>
-HIPSYCL_KERNEL_TARGET
-T initialize_type(elementType<T> init) {
+template <typename T, typename std::enable_if_t<!std::is_arithmetic_v<T>, int> = 0>
+HIPSYCL_KERNEL_TARGET T initialize_type(elementType<T> init) {
   constexpr size_t N = T::get_count();
 
-  if constexpr (std::is_same_v<elementType<T>, bool>)
+  if constexpr(std::is_same_v<elementType<T>, bool>)
     return T{init};
 
-  if constexpr (N == 1) {
+  if constexpr(N == 1) {
     return T{init};
-  } else if constexpr (N == 2) {
+  } else if constexpr(N == 2) {
     return T{init, init};
-  } else if constexpr (N == 3) {
+  } else if constexpr(N == 3) {
     return T{init, init, init};
-  } else if constexpr (N == 4) {
+  } else if constexpr(N == 4) {
     return T{init, init, init, init};
-  } else if constexpr (N == 8) {
+  } else if constexpr(N == 8) {
     return T{init, init, init, init, init, init, init, init};
-  } else if constexpr (N == 16) {
-    return T{init, init, init, init, init, init,
-             init, init, init, init, init, init,
-             init, init, init, init};
+  } else if constexpr(N == 16) {
+    return T{init, init, init, init, init, init, init, init, init, init, init, init, init, init, init, init};
   }
 
   static_assert(true, "invalide vector type!");
 }
 
-template<typename T, int N>
+template <typename T, int N>
 bool compare_type(s::vec<T, N> v1, s::vec<T, N> v2) {
   bool ret = true;
-  if constexpr (1 <= N)
+  if constexpr(1 <= N)
     ret &= v1.s0() == v2.s0();
-  if constexpr (2 <= N)
+  if constexpr(2 <= N)
     ret &= v1.s1() == v2.s1();
-  if constexpr (3 <= N)
+  if constexpr(3 <= N)
     ret &= v1.s2() == v2.s2();
-  if constexpr (4 <= N)
+  if constexpr(4 <= N)
     ret &= v1.s3() == v2.s3();
-  if constexpr (8 <= N) {
+  if constexpr(8 <= N) {
     ret &= v1.s4() == v2.s4();
     ret &= v1.s5() == v2.s5();
     ret &= v1.s6() == v2.s6();
     ret &= v1.s7() == v2.s7();
   }
-  if constexpr (16 <= N) {
+  if constexpr(16 <= N) {
     ret &= v1.s8() == v2.s8();
     ret &= v1.s9() == v2.s9();
     ret &= v1.sA() == v2.sA();
@@ -114,7 +110,7 @@ bool compare_type(s::vec<T, N> v1, s::vec<T, N> v2) {
   return ret;
 }
 
-template<typename T>
+template <typename T>
 bool compare_type(T x1, T x2) {
   return (x1 - x2 < 1.0) && (x2 - x1) < 1.0;
 }
@@ -145,13 +141,13 @@ public:
 
       cgh.parallel_for<MicroBenchGroupInclusiveScanKernel<DataT, Iterations>>(
           s::nd_range<1>{num_groups * args.local_size, args.local_size}, [=](cl::sycl::nd_item<1> item) {
-            auto g  = item.get_group();
+            auto g = item.get_group();
             size_t gid = item.get_global_linear_id();
             DataT d = initialize_type<DataT>(0);
 
             for(int i = 1; i <= Iterations; ++i) {
               DataT j = initialize_type<DataT>(i);
-              d = s::group_inclusive_scan(g, j, [](DataT a, DataT b) { return a+b; });
+              d = s::group_inclusive_scan(g, j, [](DataT a, DataT b) { return a + b; });
             }
 
             out[gid] = d;
@@ -164,7 +160,7 @@ public:
     DataT expected = initialize_type<DataT>(0);
 
     for(size_t i = 0; i < args.problem_size; ++i) {
-      if(i%args.local_size == 0)
+      if(i % args.local_size == 0)
         expected = 0;
       expected += initialize_type<DataT>(Iterations);
       if(!compare_type(result[i], expected)) {

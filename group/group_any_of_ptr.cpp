@@ -1,5 +1,5 @@
 #include "common.h"
-#include<iostream>
+#include <iostream>
 
 namespace s = cl::sycl;
 
@@ -37,7 +37,7 @@ public:
 
       cgh.parallel_for<MicroBenchGroupAnyOfPtr<Iterations>>(
           s::nd_range<1>{num_groups * args.local_size, args.local_size}, [=](cl::sycl::nd_item<1> item) {
-            auto g  = item.get_group();
+            auto g = item.get_group();
             size_t gid = item.get_global_linear_id();
             bool d;
 
@@ -48,7 +48,7 @@ public:
               d = s::detail::any_of(g, start.get(), end.get());
             }
 
-            if (gid == 0)
+            if(gid == 0)
               out[0] = d;
           });
     }));

@@ -18,9 +18,7 @@ protected:
 public:
   MicroBenchGroupAnyOf(const BenchmarkArgs& _args) : args(_args) {}
 
-  void setup() {
-    output_buf.initialize(args.device_queue, s::range<1>(1));
-  }
+  void setup() { output_buf.initialize(args.device_queue, s::range<1>(1)); }
 
   void run(std::vector<cl::sycl::event>& events) {
     size_t num_groups = (args.problem_size + args.local_size - 1) / args.local_size;
@@ -29,7 +27,7 @@ public:
 
       cgh.parallel_for<MicroBenchGroupAnyOfKernel<Iterations>>(
           s::nd_range<1>{num_groups * args.local_size, args.local_size}, [=](cl::sycl::nd_item<1> item) {
-            auto g  = item.get_group();
+            auto g = item.get_group();
             size_t gid = item.get_global_linear_id();
             bool d = true;
 
@@ -37,7 +35,7 @@ public:
               d &= s::group_any_of(g, true);
             }
 
-            if (gid == 0)
+            if(gid == 0)
               out[0] = d;
           });
     }));
