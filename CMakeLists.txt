@@ -44,7 +44,9 @@ if(SYCL_IMPL STREQUAL "ComputeCpp")
   find_package(ComputeCpp MODULE REQUIRED)
 elseif(SYCL_IMPL STREQUAL "hipSYCL")
   find_package(hipSYCL CONFIG REQUIRED)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --gpu-max-threads-per-block=1024")
+  # needed for large groups when using HIP
+  #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --gpu-max-threads-per-block=1024")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 elseif(SYCL_IMPL STREQUAL "LLVM")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsycl")
 elseif(SYCL_IMPL STREQUAL "LLVM-CUDA")
@@ -54,13 +56,14 @@ elseif(SYCL_IMPL STREQUAL "triSYCL")
   find_package(TriSYCL MODULE REQUIRED)
 endif()
 
+# needed for rocprim
 #find_package(rocprim REQUIRED CONFIG)
 
 set(benchmarks
   #group/group_reduce_cub.cpp
   #group/group_reduce_rocprim.cpp
-  group/group_inclusive_scan_cub.cpp
-  group/group_inclusive_scan_rocprim.cpp
+  #group/group_inclusive_scan_cub.cpp
+  #group/group_inclusive_scan_rocprim.cpp
   group/group_reduce.cpp
   group/group_reduce_ptr.cpp
   group/scoped_group_reduce_ptr.cpp
@@ -108,7 +111,7 @@ set(benchmarks
   polybench/mvt.cpp
   polybench/syr2k.cpp
   polybench/syrk.cpp
-  compiletime/compiletime.cpp
+  #compiletime/compiletime.cpp
 )
 
 foreach(benchmark IN LISTS benchmarks)

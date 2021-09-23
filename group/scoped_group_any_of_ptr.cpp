@@ -1,5 +1,5 @@
 #include "common.h"
-#include<iostream>
+#include <iostream>
 
 namespace s = cl::sycl;
 
@@ -47,7 +47,7 @@ public:
               d = s::detail::leader_any_of(g, start.get(), end.get());
             }
 
-            if (gid == 0)
+            if(gid == 0)
               out[0] = d;
           });
     }));
@@ -56,8 +56,9 @@ public:
   bool verify(VerificationSetting& ver) {
     auto result = output_buf.template get_access<s::access::mode::read>();
 
-    if (result[0])
-	   std::cout << "true" << ":" << +result[0] << std::endl;
+    if(result[0])
+      std::cout << "true"
+                << ":" << +result[0] << std::endl;
     return !result[0];
   }
 
