@@ -4,6 +4,12 @@
 #include <type_traits>
 #include <iomanip>
 
+#ifdef FIXED_WG_SIZE
+#define WG_SIZE_ATTR(F) cl::sycl::attribute<cl::sycl::reqd_work_group_size<FIXED_WG_SIZE>>((F))
+#else 
+#define WG_SIZE_ATTR(F) (F)
+#endif
+
 //using namespace cl::sycl;
 namespace s = cl::sycl;
 
@@ -65,11 +71,11 @@ public:
         cl::sycl::nd_range<1> ndrange (args.problem_size, args.local_size);
 
         cgh.parallel_for<class ScalarProdKernel<T, Use_ndrange>>(ndrange,
-          [=](cl::sycl::nd_item<1> item) 
+          WG_SIZE_ATTR([=](cl::sycl::nd_item<1> item) 
           {
             size_t gid= item.get_global_linear_id();
             intermediate_product[gid] = in1[gid] * in2[gid];
-          });
+          }));
       }
       else {
         cgh.parallel_for_work_group<class ScalarProdKernelHierarchical<T, Use_ndrange>>(
@@ -87,7 +93,7 @@ public:
     // std::cout << "Multiplication of vectors completed" << std::endl;
 
     auto array_size = args.problem_size;
-    auto wgroup_size = args.local_size;
+    const auto wgroup_size = args.local_size;
     // Not yet tested with more than 2
     auto elements_per_thread = 2;
 
@@ -105,7 +111,7 @@ public:
     
           if(Use_ndrange) {
             cgh.parallel_for<class ScalarProdReduction<T, Use_ndrange>>(ndrange,
-            [=](cl::sycl::nd_item<1> item) 
+            WG_SIZE_ATTR([=](cl::sycl::nd_item<1> item) 
               {
                 size_t gid= item.get_global_linear_id();
                 size_t lid = item.get_local_linear_id();
@@ -135,7 +141,7 @@ public:
                 if (lid == 0) {
                   global_mem[item.get_global_id()] = local_mem[0];
                 }
-              });
+              }));
           }
           else {
             cgh.parallel_for_work_group<class ScalarProdReductionHierarchical<T, Use_ndrange>>(

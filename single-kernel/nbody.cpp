@@ -9,6 +9,12 @@ template<class float_type> class NDRangeNBodyKernel;
 template<class float_type> class HierarchicalNBodyKernel;
 
 
+#ifdef FIXED_WG_SIZE
+#define WG_SIZE_ATTR(F) cl::sycl::attribute<cl::sycl::reqd_work_group_size<FIXED_WG_SIZE>>((F))
+#else 
+#define WG_SIZE_ATTR(F) (F)
+#endif
+
 template<class float_type>
 class NBody
 {
@@ -156,7 +162,7 @@ protected:
           sycl::range<1>{args.local_size}, cgh};
 
       cgh.parallel_for<NDRangeNBodyKernel<float_type>>(execution_range,
-          [=, dt = this->dt, gravitational_softening = this->gravitational_softening](sycl::nd_item<1> tid) {
+          WG_SIZE_ATTR(([=, dt = this->dt, gravitational_softening = this->gravitational_softening](sycl::nd_item<1> tid) {
 
             const size_t global_id = tid.get_global_id(0);
             const size_t local_id = tid.get_local_id(0);
@@ -206,7 +212,7 @@ protected:
               output_velocities_access[global_id] = v;
               output_particles_access[global_id] = my_particle;
             }
-          });
+          })));
     });
   }
 

@@ -12,6 +12,12 @@ using namespace cl;
 template <typename T> class ReductionKernelNDRange;
 template <typename T> class ReductionKernelHierarchical;
 
+#ifdef FIXED_WG_SIZE
+#define WG_SIZE_ATTR(F) cl::sycl::attribute<cl::sycl::reqd_work_group_size<FIXED_WG_SIZE>>((F))
+#else 
+#define WG_SIZE_ATTR(F) (F)
+#endif
+
 template <typename T>
 class Reduction
 {
@@ -126,6 +132,7 @@ private:
 
       cgh.parallel_for<ReductionKernelNDRange<T>>(
         ndrange,
+        WG_SIZE_ATTR(
         [=](sycl::nd_item<1> item) {
           
           const int lid = item.get_local_id(0);
@@ -142,7 +149,7 @@ private:
           }
           if(lid == 0)
             acc_out[item.get_group(0)] = scratch[0];
-        });
+        }));
     }); // submit
   }
 
