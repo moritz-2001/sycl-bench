@@ -70,13 +70,13 @@ int main(int argc, char** argv) {
   app.run<MicroBenchGroupReduce<long long>>();
   app.run<MicroBenchGroupReduce<float>>();
   app.run<MicroBenchGroupReduce<double>>();
-  app.run<MicroBenchGroupReduce<cl::sycl::vec<int, 1>, true>>();
-  app.run<MicroBenchGroupReduce<cl::sycl::vec<unsigned char, 4>, true>>();
-  app.run<MicroBenchGroupReduce<cl::sycl::vec<int, 4>, true>>();
-  app.run<MicroBenchGroupReduce<cl::sycl::vec<int, 8>, true>>();
-  app.run<MicroBenchGroupReduce<cl::sycl::vec<float, 1>, true>>();
-  app.run<MicroBenchGroupReduce<cl::sycl::vec<double, 2>, true>>();
-  app.run<MicroBenchGroupReduce<cl::sycl::vec<float, 4>, true>>();
-  app.run<MicroBenchGroupReduce<cl::sycl::vec<float, 8>, true>>();
+  // app.run<MicroBenchGroupReduce<cl::sycl::vec<int, 1>, true>>();
+  // app.run<MicroBenchGroupReduce<cl::sycl::vec<unsigned char, 4>, true>>();
+  // app.run<MicroBenchGroupReduce<cl::sycl::vec<int, 4>, true>>();
+  // app.run<MicroBenchGroupReduce<cl::sycl::vec<int, 8>, true>>();
+  // app.run<MicroBenchGroupReduce<cl::sycl::vec<float, 1>, true>>();
+  // app.run<MicroBenchGroupReduce<cl::sycl::vec<double, 2>, true>>();
+  // app.run<MicroBenchGroupReduce<cl::sycl::vec<float, 4>, true>>();
+  // app.run<MicroBenchGroupReduce<cl::sycl::vec<float, 8>, true>>();
   return 0;
 }

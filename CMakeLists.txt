@@ -24,8 +24,8 @@ endif()
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/polybench/common)
 
-find_package(xsimd REQUIRED CONFIG)
-include_directories(${xsimd_INCLUDE_DIR})
+#find_package(xsimd REQUIRED CONFIG)
+#include_directories(${xsimd_INCLUDE_DIR})
 
 set(supported_implementations
   ComputeCpp
