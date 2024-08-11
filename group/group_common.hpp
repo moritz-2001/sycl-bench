@@ -3,7 +3,53 @@
 #include "group_common.hpp"
 #include <iostream>
 
+#include <type_traits>
+
+
 namespace s = cl::sycl;
+
+template<size_t S>
+struct Big {
+  constexpr static bool isBig = true;
+  uint32_t x;
+  uint32_t y;
+  uint32_t z;
+  uint32_t l;
+  std::array<uint64_t, S> a;
+
+  bool operator==(const Big& other) const noexcept {
+    return other.x == x and other.y == y and other.z == z and other.l == l;
+  }
+
+  Big& operator=(const Big& other) noexcept {
+    x = other.x;
+    y = other.y;
+    z = other.z;
+    l = other.l;
+    a = other.a;
+    return *this;
+  }
+
+  Big& operator=(uint64_t x) noexcept {
+    this->x = x;
+    return *this;
+  }
+
+  Big& operator+=(const Big& x) noexcept {
+    this->x += x.x;
+    this->y += y;
+    this->z += z;
+    this->a += a;
+    return *this;
+  }
+
+  Big operator+(const Big& other) const noexcept {
+    return {x + other.x, y + other.y, z + other.z, l + other.l};
+  }
+};
+
+template<typename T>
+using array_entry_t = typename std::remove_reference<decltype( std::declval<T>()[0] )>::type;
 
 template <typename T>
 using elementType = std::remove_reference_t<decltype(T{}.s0())>;
@@ -50,46 +96,24 @@ std::string type_to_string(T x) {
   return ss.str();
 }
 
+template<size_t S>
+std::string type_to_string(Big<S> x) {
+  std::stringstream ss{};
+  ss << x.x << " " << x.y << " " << x.z << " " << x.l;
+
+  return ss.str();
+}
+
 template <typename T, typename std::enable_if_t<std::is_arithmetic_v<T>, int> = 0>
 HIPSYCL_KERNEL_TARGET T initialize_type(T init) {
   return init;
 }
 
-template <typename T, typename std::enable_if_t<!std::is_arithmetic_v<T>, int> = 0>
-HIPSYCL_KERNEL_TARGET T initialize_type(elementType<T> init) {
-  return T{init};
+template <typename T, typename std::enable_if_t<T::isBig, int> = 0>
+HIPSYCL_KERNEL_TARGET T initialize_type(uint32_t init) {
+  return {init, init+1, init+2, init+3};
 }
 
-template <typename T, int N>
-bool compare_type(s::vec<T, N> v1, s::vec<T, N> v2) {
-  bool ret = true;
-  if constexpr(1 <= N)
-    ret &= v1.s0() == v2.s0();
-  if constexpr(2 <= N)
-    ret &= v1.s1() == v2.s1();
-  if constexpr(3 <= N)
-    ret &= v1.s2() == v2.s2();
-  if constexpr(4 <= N)
-    ret &= v1.s3() == v2.s3();
-  if constexpr(8 <= N) {
-    ret &= v1.s4() == v2.s4();
-    ret &= v1.s5() == v2.s5();
-    ret &= v1.s6() == v2.s6();
-    ret &= v1.s7() == v2.s7();
-  }
-  if constexpr(16 <= N) {
-    ret &= v1.s8() == v2.s8();
-    ret &= v1.s9() == v2.s9();
-    ret &= v1.sA() == v2.sA();
-    ret &= v1.sB() == v2.sB();
-    ret &= v1.sC() == v2.sC();
-    ret &= v1.sD() == v2.sD();
-    ret &= v1.sE() == v2.sE();
-    ret &= v1.sF() == v2.sF();
-  }
-
-  return ret;
-}
 
 template <typename T>
 bool compare_type(T x1, T x2) {

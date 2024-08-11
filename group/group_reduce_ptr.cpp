@@ -40,7 +40,10 @@ public:
           s::nd_range<1>{num_groups * args.local_size, args.local_size}, [=](cl::sycl::nd_item<1> item) {
             auto g = item.get_group();
             size_t gid = item.get_global_linear_id();
+            size_t size = item.get_local_linear_range();
             DataT d = initialize_type<DataT>(0);
+
+            item.get_local_linear_id();
 
             auto start = in.get_pointer();
             auto end = start + static_cast<size_t>(input_size);

@@ -35,6 +35,9 @@ set(supported_implementations
   triSYCL
 )
 
+
+set(SYCL_IMPL hipSYCL)
+
 list(FIND supported_implementations ${SYCL_IMPL} impl_idx)
 if(NOT SYCL_IMPL OR impl_idx EQUAL -1)
   message(FATAL_ERROR "Please specify SYCL_IMPL (one of: ${supported_implementations})")
@@ -43,7 +46,8 @@ endif()
 if(SYCL_IMPL STREQUAL "ComputeCpp")
   find_package(ComputeCpp MODULE REQUIRED)
 elseif(SYCL_IMPL STREQUAL "hipSYCL")
-  find_package(hipSYCL CONFIG REQUIRED)
+  message("TARGET ${ACPP_TARGETS}")
+  find_package(AdaptiveCpp CONFIG REQUIRED)
   # needed for large groups when using HIP
   #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --gpu-max-threads-per-block=1024")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
@@ -58,59 +62,19 @@ endif()
 
 # needed for rocprim
 #find_package(rocprim REQUIRED CONFIG)
-
 set(benchmarks
   #group/group_reduce_cub.cpp
   #group/group_reduce_rocprim.cpp
   #group/group_inclusive_scan_cub.cpp
   #group/group_inclusive_scan_rocprim.cpp
+ # group/shift_left.cpp
+  group/matrix_multiply.cpp
   group/group_reduce.cpp
-  group/group_reduce_ptr.cpp
-  group/scoped_group_reduce_ptr.cpp
-  group/group_any_of.cpp
-  group/group_any_of_ptr.cpp
-  group/scoped_group_any_of_ptr.cpp
-  group/group_inclusive_scan.cpp
-  group/group_inclusive_scan_ptr.cpp
-  group/scoped_group_inclusive_scan_ptr.cpp
-  micro/arith.cpp
-  micro/DRAM.cpp
-  micro/host_device_bandwidth.cpp
-  micro/pattern_L2.cpp
-  micro/sf.cpp
-  micro/local_mem.cpp
-  single-kernel/median.cpp
-  single-kernel/scalar_prod.cpp
-  single-kernel/sobel.cpp
-  single-kernel/sobel5.cpp
-  single-kernel/sobel7.cpp
-  single-kernel/vec_add.cpp
-  single-kernel/lin_reg_error.cpp
-  single-kernel/lin_reg_coeff.cpp
-  single-kernel/kmeans.cpp
-  single-kernel/mol_dyn.cpp
-  single-kernel/nbody.cpp
-  pattern/segmentedreduction.cpp
-  pattern/reduction.cpp
-  runtime/dag_task_throughput_sequential.cpp
-  runtime/dag_task_throughput_independent.cpp
-  runtime/blocked_transform.cpp
-  runtime/matmulchain.cpp
-  polybench/2DConvolution.cpp
-  polybench/2mm.cpp
-  polybench/3DConvolution.cpp
-  polybench/3mm.cpp
-  polybench/atax.cpp
-  polybench/bicg.cpp
-  polybench/correlation.cpp
-  polybench/covariance.cpp
-  polybench/fdtd2d.cpp
-  polybench/gemm.cpp
-  polybench/gesummv.cpp
-  polybench/gramschmidt.cpp
-  polybench/mvt.cpp
-  polybench/syr2k.cpp
-  polybench/syrk.cpp
+        group/shuffle.cpp
+        group/voteAll.cpp
+        group/group_any_of.cpp
+        group/group_inclusive_scan.cpp
+
   #compiletime/compiletime.cpp
 )
 
@@ -120,24 +84,24 @@ foreach(benchmark IN LISTS benchmarks)
   add_executable(${target} ${benchmark})
 
   if(SYCL_IMPL STREQUAL "ComputeCpp" OR SYCL_IMPL STREQUAL "hipSYCL")
-    add_sycl_to_target(TARGET ${target} SOURCES ${benchmark})
+   add_sycl_to_target(TARGET ${target} SOURCES ${benchmark})
   endif()
 
   if(SYCL_IMPL STREQUAL "ComputeCpp" AND COMPUTECPP_BITCODE STREQUAL "ptx64")
-    target_compile_definitions(${target} PRIVATE SYCL_BENCH_ENABLE_QUEUE_PROFILING)
+   # target_compile_definitions(${target} PRIVATE SYCL_BENCH_ENABLE_QUEUE_PROFILING)
   endif()
 
   if(SYCL_IMPL STREQUAL "LLVM")
-    target_compile_definitions(${target} PRIVATE __LLVM_SYCL__)
+ #   target_compile_definitions(${target} PRIVATE __LLVM_SYCL__)
   endif()
 
   if(SYCL_IMPL STREQUAL "LLVM-CUDA")
-    target_compile_definitions(${target} PRIVATE __LLVM_SYCL_CUDA__)
+#    target_compile_definitions(${target} PRIVATE __LLVM_SYCL_CUDA__)
   endif()
 
   if(SYCL_IMPL STREQUAL "triSYCL")
-    add_sycl_to_target(${target})
-    target_compile_definitions(${target} PRIVATE __TRISYCL__)
+  #  add_sycl_to_target(${target})
+  #  target_compile_definitions(${target} PRIVATE __TRISYCL__)
   endif()
 
   install(TARGETS ${target} RUNTIME DESTINATION bin/benchmarks/)

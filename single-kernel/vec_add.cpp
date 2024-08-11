@@ -51,11 +51,12 @@ public:
       auto out = output_buf.template get_access<s::access::mode::discard_write>(cgh);
       cl::sycl::range<1> ndrange {args.problem_size};
 
-      cgh.parallel_for<class VecAddKernel<T>>(ndrange,
+      cgh.parallel_for<class VecAddKernel<T>>(cl::sycl::range<1>{1024},
         [=](cl::sycl::id<1> gid) 
         {
           out[gid] = in1[gid] + in2[gid];
         });
+
     }));
 
   }

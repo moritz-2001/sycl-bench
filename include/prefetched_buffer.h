@@ -20,7 +20,7 @@ template <class BufferType>
 inline void forceDataTransfer(cl::sycl::queue& q, BufferType b) {
   q.submit([&](cl::sycl::handler& cgh) {
     auto acc = b.template get_access<cl::sycl::access::mode::read>(cgh);
-    cgh.single_task(InitializationDummyKernel{acc});
+    cgh.single_task([]() {});
   });
   q.wait_and_throw();
 }
@@ -29,7 +29,7 @@ template <class BufferType>
 inline void forceDataAllocation(cl::sycl::queue& q, BufferType b) {
   q.submit([&](cl::sycl::handler& cgh) {
     auto acc = b.template get_access<cl::sycl::access::mode::discard_write>(cgh);
-    cgh.single_task(InitializationDummyKernel{acc});
+    cgh.single_task([]() {});
   });
   q.wait_and_throw();
 }
