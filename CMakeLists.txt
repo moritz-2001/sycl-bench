@@ -63,11 +63,6 @@ endif()
 # needed for rocprim
 #find_package(rocprim REQUIRED CONFIG)
 set(benchmarks
-  #group/group_reduce_cub.cpp
-  #group/group_reduce_rocprim.cpp
-  #group/group_inclusive_scan_cub.cpp
-  #group/group_inclusive_scan_rocprim.cpp
- # group/shift_left.cpp
   group/matrix_multiply.cpp
   group/group_reduce.cpp
         group/shuffle.cpp
@@ -75,7 +70,6 @@ set(benchmarks
         group/group_any_of.cpp
         group/group_inclusive_scan.cpp
 
-  #compiletime/compiletime.cpp
 )
 
 foreach(benchmark IN LISTS benchmarks)

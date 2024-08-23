@@ -68,8 +68,7 @@ public:
 
   static std::string getBenchmarkName() {
     std::stringstream name;
-    name << "GroupFunctionBench_Reduce_";
-    //name << ReadableTypename<DataT>::name << "_";
+    name << ReadableTypename<DataT>::name << "_";
     name << Iterations;
     return name.str();
   }
@@ -81,15 +80,7 @@ int main(int argc, char** argv) {
   //app.run<MicroBenchGroupReduce<Big<1>>>();//////
   app.run<MicroBenchGroupReduce<int>>();///
   //app.run<MicroBenchGroupReduce<float>>();///
-  //app.run<MicroBenchGroupReduce<float>>();
-  //app.run<MicroBenchGroupReduce<long>>();
-  // app.run<MicroBenchGroupReduce<cl::sycl::vec<int, 1>, true>>();
-  // app.run<MicroBenchGroupReduce<cl::sycl::vec<unsigned char, 4>, true>>();
-  //app.run<MicroBenchGroupReduce<cl::sycl::vec<int, 4>, true>>();
-  // app.run<MicroBenchGroupReduce<cl::sycl::vec<int, 8>, true>>();
-  // app.run<MicroBenchGroupReduce<cl::sycl::vec<float, 1>, true>>();
-  // app.run<MicroBenchGroupReduce<cl::sycl::vec<double, 2>, true>>();
-  // app.run<MicroBenchGroupReduce<cl::sycl::vec<float, 4>, true>>();
-  // app.run<MicroBenchGroupReduce<cl::sycl::vec<float, 8>, true>>();
+  app.run<MicroBenchGroupReduce<long long>>();
+  //app.run<MicroBenchGroupReduce<double>>();
   return 0;
 }

@@ -58,8 +58,7 @@ public:
 
   static std::string getBenchmarkName() {
     std::stringstream name;
-    name << "Shuffle";
-    //name << ReadableTypename<DataT>::name << "_";
+    name << ReadableTypename<DataT>::name << "_";
     name << Iterations;
     return name.str();
   }
@@ -68,8 +67,8 @@ public:
 int main(int argc, char** argv) {
   BenchmarkApp app(argc, argv);
 
-  //app.run<MicroBenchShuffle<double>>();
-  app.run<MicroBenchShuffle<int>>();///////
-  //app.run<MicroBenchShuffle<Big<8>>>();//
+  app.run<MicroBenchShuffle<int>>();
+  app.run<MicroBenchShuffle<long long>>();
+  //app.run<MicroBenchShuffle<Big<8>>>();
   return 0;
 }

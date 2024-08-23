@@ -90,8 +90,8 @@ public:
 
   static std::string getBenchmarkName() {
     std::stringstream name;
-    name << "GroupFunctionBench_Reduce_";
-   // name << ReadableTypename<DataT>::name << "_";
+    //name << "GroupFunctionBench_Reduce_";
+    name << ReadableTypename<DataT>::name << "_";
     name << Iterations;
     return name.str();
   }
@@ -100,17 +100,9 @@ public:
 int main(int argc, char** argv) {
   BenchmarkApp app(argc, argv);
 
-  app.run<MicroBenchMatrixMultiply<float>>();////////
-  //app.run<MicroBenchGroupReduce<long long>>();
-  //app.run<MicroBenchGroupReduce<float>>();
-  //app.run<MicroBenchGroupReduce<double>>();
-  // app.run<MicroBenchGroupReduce<cl::sycl::vec<int, 1>, true>>();
-  // app.run<MicroBenchGroupReduce<cl::sycl::vec<unsigned char, 4>, true>>();
-  // app.run<MicroBenchGroupReduce<cl::sycl::vec<int, 4>, true>>();
-  // app.run<MicroBenchGroupReduce<cl::sycl::vec<int, 8>, true>>();
-  // app.run<MicroBenchGroupReduce<cl::sycl::vec<float, 1>, true>>();
-  // app.run<MicroBenchGroupReduce<cl::sycl::vec<double, 2>, true>>();
-  // app.run<MicroBenchGroupReduce<cl::sycl::vec<float, 4>, true>>();
-  // app.run<MicroBenchGroupReduce<cl::sycl::vec<float, 8>, true>>();
+  app.run<MicroBenchMatrixMultiply<long long>>();
+  app.run<MicroBenchMatrixMultiply<int>>();
+  app.run<MicroBenchMatrixMultiply<double>>();
+  app.run<MicroBenchMatrixMultiply<float>>();
   return 0;
 }
