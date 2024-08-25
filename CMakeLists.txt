@@ -65,9 +65,12 @@ endif()
 set(benchmarks
   group/matrix_multiply.cpp
   group/group_reduce.cpp
-        group/shuffle.cpp
+        group/sg-shuffle.cpp
+        group/sg-voteAll.cpp
+        group/sg-inclusive_scan.cpp
+        group/sg-reduce.cpp
+        group/sg-shift_left.cpp
         group/voteAll.cpp
-        group/group_any_of.cpp
         group/group_inclusive_scan.cpp
 
 )

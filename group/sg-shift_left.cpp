@@ -34,14 +34,13 @@ public:
       auto a_ = a_buf.template get_access<s::access::mode::read>(cgh);
 
       cgh.parallel_for<MicroBenchShuffleKernel<DataT, Iterations>>(
-          s::nd_range<1>{num_groups * args.local_size, args.local_size}, [=](cl::sycl::nd_item<1> item) {
-            auto g = item.get_group();
+          s::nd_range<1>{num_groups * args.local_size, SGSize}, [=](cl::sycl::nd_item<1> item) {
             auto sg = item.get_sub_group();
             DataT d;
              for(size_t i = 0; i < Iterations; ++i) {
-                d = s::select_from_group(sg, a_[item.get_local_linear_id()], sg.get_local_linear_id()+2);
+                d = s::shift_group_left(sg, a_[item.get_local_linear_id()], 4);
              }
-            if (g.leader())
+            if (sg.leader())
               out[0] = d;
           });
     }));
@@ -49,7 +48,7 @@ public:
 
   bool verify(VerificationSetting& ver) {
     auto result = output_buf.template get_access<s::access::mode::read>();
-    DataT expected = initialize_type<DataT>(2);
+    DataT expected = initialize_type<DataT>(4);
 
     if(!compare_type(result[0], expected))
       std::cout << type_to_string(expected) << ":" << type_to_string(result[0]) << std::endl;

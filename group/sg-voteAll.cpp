@@ -25,15 +25,15 @@ public:
       auto out = output_buf.template get_access<s::access::mode::discard_write>(cgh);
 
       cgh.parallel_for<MicroBenchVoteAllKernel<DataT, Iterations>>(
-          s::nd_range<1>{num_groups * args.local_size, args.local_size}, [=](cl::sycl::nd_item<1> item) {
-            auto g = item.get_group();
+          s::nd_range<1>{num_groups * args.local_size, 32}, [=](cl::sycl::nd_item<1> item) {
+            auto sg = item.get_sub_group();
             DataT d{};
               for(size_t i = 0; i < Iterations; ++i) {
-                DataT x = initialize_type<DataT>(g.get_local_linear_id() < g.get_local_linear_range());
-                d = s::all_of_group(g, x);
+                DataT x = initialize_type<DataT>(sg.get_local_linear_id() < sg.get_local_linear_range());
+                d = s::all_of_group(sg, x);
               }
 
-            if (g.leader())
+            if (sg.leader())
               out[0] = d;
           });
     }));
