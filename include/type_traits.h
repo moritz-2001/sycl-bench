@@ -24,6 +24,7 @@ MAKE_READABLE_TYPENAME(long long, "int64")
 MAKE_READABLE_TYPENAME(unsigned long long, "uint64")
 MAKE_READABLE_TYPENAME(float, "fp32")
 MAKE_READABLE_TYPENAME(double, "fp64")
+MAKE_READABLE_TYPENAME(bool, "bool")
 
 template<> struct ReadableTypename<cl::sycl::vec<unsigned char, 1>> { static const char* name; };
 const char* ReadableTypename<cl::sycl::vec<unsigned char,  1>>::name = "vec<uint8:1>";

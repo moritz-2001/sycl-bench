@@ -7,7 +7,7 @@ namespace s = cl::sycl;
 template <typename DataT, size_t Iterations>
 class MicroBenchVoteAllKernel;
 
-template <typename DataT, size_t Iterations = 200000000>
+template <typename DataT, size_t Iterations = 100000>
 class MicroBenchVoteAll {
 protected:
   BenchmarkArgs args;
@@ -51,8 +51,7 @@ public:
 
   static std::string getBenchmarkName() {
     std::stringstream name;
-    name << "VoteAll";
-    //name << ReadableTypename<DataT>::name << "_";
+    name << ReadableTypename<DataT>::name << "_";
     name << Iterations;
     return name.str();
   }
@@ -62,6 +61,5 @@ int main(int argc, char** argv) {
   BenchmarkApp app(argc, argv);
 
   app.run<MicroBenchVoteAll<bool>>();
-  //app.run<MicroBenchVoteAll<Big<0>>>();
   return 0;
 }

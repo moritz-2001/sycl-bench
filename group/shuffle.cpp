@@ -7,7 +7,7 @@ namespace s = cl::sycl;
 template <typename DataT, size_t Iterations>
 class MicroBenchShuffleKernel;
 
-template <typename DataT, size_t Iterations = 200000>
+template <typename DataT, size_t Iterations = 100000>
 class MicroBenchShuffle {
 protected:
   BenchmarkArgs args;
@@ -69,6 +69,7 @@ int main(int argc, char** argv) {
 
   app.run<MicroBenchShuffle<int>>();
   app.run<MicroBenchShuffle<long long>>();
-  //app.run<MicroBenchShuffle<Big<8>>>();
+  app.run<MicroBenchShuffle<float>>();
+  app.run<MicroBenchShuffle<double>>();
   return 0;
 }

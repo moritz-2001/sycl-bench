@@ -10,7 +10,7 @@ class MicroBenchMatrixMultiplyKernel;
 /**
  * Microbenchmark benchmarking group_reduce
  */
-template <typename DataT = int, int Iterations = 1000>
+template <typename DataT = int, int Iterations = 10000>
 class MicroBenchMatrixMultiply {
 protected:
   BenchmarkArgs args;
@@ -60,8 +60,8 @@ public:
 
                const size_t SG_SIZE = sg.get_local_linear_range();
 
-               for (auto i = 0; i < Iterations; ++i) {//a
-                  int sum = 0;
+               for (auto i = 0; i < Iterations; ++i) {
+                  DataT sum{};
                   for (auto kk = 0ul; kk < LOCAL_SIZE; kk += SG_SIZE) {
                       const auto tile = a_[m][kk + sg.get_local_linear_id()];
                       for (auto k = 0ul; k < SG_SIZE; ++k) {

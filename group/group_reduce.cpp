@@ -10,7 +10,7 @@ class MicroBenchGroupReduceKernel;
 /**
  * Microbenchmark benchmarking group_reduce/aaaax
  */
-template <typename DataT, bool IsVector = false, int Iterations = 5120*10>
+template <typename DataT, bool IsVector = false, int Iterations = 10000>
 class MicroBenchGroupReduce {
 protected:
   BenchmarkArgs args;
@@ -77,10 +77,9 @@ public:
 int main(int argc, char** argv) {
   BenchmarkApp app(argc, argv);
 
-  //app.run<MicroBenchGroupReduce<Big<1>>>();//////
-  app.run<MicroBenchGroupReduce<int>>();///
-  //app.run<MicroBenchGroupReduce<float>>();///
+  app.run<MicroBenchGroupReduce<int>>();
   app.run<MicroBenchGroupReduce<long long>>();
-  //app.run<MicroBenchGroupReduce<double>>();
+  app.run<MicroBenchGroupReduce<float>>();
+  app.run<MicroBenchGroupReduce<double>>();
   return 0;
 }

@@ -190,7 +190,7 @@ public:
   {
     std::size_t size = cli_parser.getOrDefault<std::size_t>("--size", 1024);
     std::size_t local_size = cli_parser.getOrDefault<std::size_t>("--local", 1024);
-    std::size_t num_runs = cli_parser.getOrDefault<std::size_t>("--num-runs", 5);
+    std::size_t num_runs = cli_parser.getOrDefault<std::size_t>("--num-runs", 20);
 
     std::string device_type = cli_parser.getOrDefault<std::string>("--device", "cpu");
     cl::sycl::queue q = getQueue(device_type);

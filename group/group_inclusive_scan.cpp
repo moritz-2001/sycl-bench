@@ -9,7 +9,7 @@ class MicroBenchGroupInclusiveScanKernel;
 /**
  * Microbenchmark benchmarking group_reduce
  */
-template <typename DataT, int Iterations = 512>
+template <typename DataT, int Iterations = 10000>
 class MicroBenchGroupInclusiveScan {
 protected:
   BenchmarkArgs args;
@@ -78,8 +78,7 @@ public:
 
   static std::string getBenchmarkName() {
     std::stringstream name;
-    name << "GroupFunctionBench_InclusiveScan";
-   // name << ReadableTypename<DataT>::name << "_";
+    name << ReadableTypename<DataT>::name << "_";
     name << Iterations;
     return name.str();
   }
@@ -88,10 +87,9 @@ public:
 int main(int argc, char** argv) {
   BenchmarkApp app(argc, argv);
 
-  //app.run<MicroBenchGroupInclusiveScan<Big<1>>>();
   app.run<MicroBenchGroupInclusiveScan<int>>();
-  //app.run<MicroBenchGroupInclusiveScan<long long>>();//
-  //app.run<MicroBenchGroupInclusiveScan<float>>();
-  //app.run<MicroBenchGroupInclusiveScan<float>>();
+  app.run<MicroBenchGroupInclusiveScan<long long>>();
+  app.run<MicroBenchGroupInclusiveScan<float>>();
+  app.run<MicroBenchGroupInclusiveScan<double>>();
   return 0;
 }
