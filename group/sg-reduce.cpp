@@ -48,7 +48,8 @@ public:
 
   bool verify(VerificationSetting& ver) {
     auto result = output_buf.template get_access<s::access::mode::read>();
-    DataT expected = initialize_type<DataT>(496);
+    auto res = (SGSize-1)*SGSize / 2;
+    DataT expected = initialize_type<DataT>(res);
 
     if(!compare_type(result[0], expected))
       std::cout << type_to_string(expected) << ":" << type_to_string(result[0]) << std::endl;
