@@ -66,11 +66,11 @@ set(benchmarks
   group/matrix_multiply.cpp
   group/group_reduce.cpp
         group/sg-shuffle.cpp
-        group/sg-voteAll.cpp
+        group/sg-vote_all.cpp
         group/sg-inclusive_scan.cpp
         group/sg-reduce.cpp
         group/sg-shift_left.cpp
-        group/voteAll.cpp
+        group/vote_all.cpp
         group/group_inclusive_scan.cpp
 
 )
