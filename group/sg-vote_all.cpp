@@ -7,7 +7,7 @@ namespace s = cl::sycl;
 template <typename DataT, size_t Iterations>
 class MicroBenchVoteAllKernel;
 
-template <typename DataT, size_t Iterations = 100000>
+template <typename DataT, size_t Iterations = 1000000>
 class MicroBenchVoteAll {
 protected:
   BenchmarkArgs args;
@@ -20,6 +20,7 @@ public:
   void setup() { output_buf.initialize(args.device_queue, s::range<1>(1)); }
 
   void run(std::vector<cl::sycl::event>& events) {
+    auto SgSize = args.device_queue.get_device().get_info<s::info::device::sub_group_sizes>().at(0);
     size_t num_groups = (args.problem_size + args.local_size - 1) / args.local_size;
     events.push_back(args.device_queue.submit([&](cl::sycl::handler& cgh) {
       auto out = output_buf.template get_access<s::access::mode::discard_write>(cgh);

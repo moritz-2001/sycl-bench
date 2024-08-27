@@ -7,7 +7,7 @@ namespace s = cl::sycl;
 template <typename DataT, size_t Iterations>
 class MicroBenchShuffleKernel;
 
-template <typename DataT, size_t Iterations = 100000>
+template <typename DataT, size_t Iterations = 10000000>
 class MicroBenchShuffle {
 protected:
   BenchmarkArgs args;
@@ -28,13 +28,14 @@ public:
   }
 
   void run(std::vector<cl::sycl::event>& events) {
+    auto SgSize = args.device_queue.get_device().get_info<s::info::device::sub_group_sizes>().at(0);
     size_t num_groups = (args.problem_size + args.local_size - 1) / args.local_size;
     events.push_back(args.device_queue.submit([&](cl::sycl::handler& cgh) {
       auto out = output_buf.template get_access<s::access::mode::discard_write>(cgh);
       auto a_ = a_buf.template get_access<s::access::mode::read>(cgh);
 
       cgh.parallel_for<MicroBenchShuffleKernel<DataT, Iterations>>(
-          s::nd_range<1>{num_groups * args.local_size, SGSize}, [=](cl::sycl::nd_item<1> item) {
+          s::nd_range<1>{num_groups * args.local_size, SgSize}, [=](cl::sycl::nd_item<1> item) {
             auto sg = item.get_sub_group();
             DataT d;
              for(size_t i = 0; i < Iterations; ++i) {
@@ -66,6 +67,7 @@ public:
 int main(int argc, char** argv) {
   BenchmarkApp app(argc, argv);
 
+  app.run<MicroBenchShuffle<uint8_t>>();
   app.run<MicroBenchShuffle<int>>();
   app.run<MicroBenchShuffle<long long>>();
   app.run<MicroBenchShuffle<float>>();
