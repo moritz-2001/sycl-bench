@@ -37,7 +37,7 @@ public:
       cgh.parallel_for<MicroBenchShuffleKernel<DataT, Iterations>>(
           s::nd_range<1>{num_groups * args.local_size, args.local_size}, [=](cl::sycl::nd_item<1> item) {
             auto sg = item.get_sub_group();
-            DataT d;
+            volatile DataT d;
              for(size_t i = 0; i < Iterations; ++i) {
                 d = s::inclusive_scan_over_group(sg, a_[sg.get_local_linear_id()], s::plus<DataT>());
              }

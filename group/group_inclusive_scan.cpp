@@ -47,7 +47,7 @@ public:
           s::nd_range<1>{num_groups * args.local_size, args.local_size}, [=](cl::sycl::nd_item<1> item) {
             auto g = item.get_group();
             size_t gid = item.get_global_linear_id();
-            DataT d = initialize_type<DataT>(0);
+            volatile DataT d = initialize_type<DataT>(0);
 
             for(int i = 1; i <= Iterations; ++i) {//a
               d = s::inclusive_scan_over_group(g, a_[item.get_local_linear_id()], cl::sycl::plus<DataT>{});

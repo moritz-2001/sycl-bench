@@ -28,7 +28,7 @@ public:
       cgh.parallel_for<MicroBenchVoteAllKernel<DataT, Iterations>>(
           s::nd_range<1>{num_groups * args.local_size, 32}, [=](cl::sycl::nd_item<1> item) {
             auto sg = item.get_sub_group();
-            DataT d{};
+            volatile DataT d{};
               for(size_t i = 0; i < Iterations; ++i) {
                 DataT x = initialize_type<DataT>(sg.get_local_linear_id() < sg.get_local_linear_range());
                 d = s::all_of_group(sg, x);
