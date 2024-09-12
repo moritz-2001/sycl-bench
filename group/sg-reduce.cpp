@@ -36,14 +36,14 @@ public:
 
 
       cgh.parallel_for<MicroBenchShuffleKernel<DataT, Iterations>>(
-          s::nd_range<1>{num_groups * args.local_size, SgSize}, [=](cl::sycl::nd_item<1> item) {
+          s::nd_range<1>{SgSize, SgSize}, [=](cl::sycl::nd_item<1> item) {
             auto sg = item.get_sub_group();
             volatile DataT d;
              for(size_t i = 0; i < Iterations; ++i) {
                 d = s::group_reduce(sg, a_[item.get_local_linear_id()], s::plus<DataT>());
+               if (sg.leader())
+                 out[0] = d;
              }
-            if (sg.leader())
-              out[0] = d;
           });
     }));
   }
@@ -70,7 +70,6 @@ public:
 int main(int argc, char** argv) {
   BenchmarkApp app(argc, argv);
 
-  app.run<MicroBenchShuffle<uint8_t>>();
   app.run<MicroBenchShuffle<int>>();
   app.run<MicroBenchShuffle<long long>>();
   app.run<MicroBenchShuffle<float>>();

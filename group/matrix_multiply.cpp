@@ -10,7 +10,7 @@ class MicroBenchMatrixMultiplyKernel;
 /**
  * Microbenchmark benchmarking group_reduce
  */
-template <typename DataT = int, int Iterations = 10000>
+template <typename DataT = int, int Iterations = 50000>
 class MicroBenchMatrixMultiply {
 protected:
   BenchmarkArgs args;
@@ -102,10 +102,9 @@ public:
 int main(int argc, char** argv) {
   BenchmarkApp app(argc, argv);
 
-  app.run<MicroBenchMatrixMultiply<uint8_t>>();//
   app.run<MicroBenchMatrixMultiply<int>>();
   app.run<MicroBenchMatrixMultiply<long long>>();
-  app.run<MicroBenchMatrixMultiply<double>>();
   app.run<MicroBenchMatrixMultiply<float>>();
+  app.run<MicroBenchMatrixMultiply<double>>();
   return 0;
 }
