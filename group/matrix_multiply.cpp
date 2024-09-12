@@ -10,7 +10,7 @@ class MicroBenchMatrixMultiplyKernel;
 /**
  * Microbenchmark benchmarking group_reduce
  */
-template <typename DataT = int, int Iterations = 50000>
+template <typename DataT = int, int Iterations = 1000>
 class MicroBenchMatrixMultiply {
 protected:
   BenchmarkArgs args;
