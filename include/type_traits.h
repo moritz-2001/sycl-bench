@@ -1,6 +1,9 @@
 #ifndef TYPE_TRAITS_H
 #define TYPE_TRAITS_H
 
+#include "../group/group_common.hpp"
+
+
 #include <CL/sycl.hpp>
 
 template<class T>
@@ -25,6 +28,23 @@ MAKE_READABLE_TYPENAME(unsigned long long, "uint64")
 MAKE_READABLE_TYPENAME(float, "fp32")
 MAKE_READABLE_TYPENAME(double, "fp64")
 MAKE_READABLE_TYPENAME(bool, "bool")
+MAKE_READABLE_TYPENAME(Byte16, "16bytes")
+MAKE_READABLE_TYPENAME(Byte32, "32bytes")
+MAKE_READABLE_TYPENAME(Byte64, "64bytes")
+
+template<size_t N>
+struct ReadableTypename<Big<N>> {
+  static const char* name;
+};
+
+template<>
+const char* ReadableTypename<Big<0>>::name = "4byte";
+template<>
+const char* ReadableTypename<Big<4>>::name = "8byte";
+template<>
+const char* ReadableTypename<Big<12>>::name = "16byte";
+template<>
+const char* ReadableTypename<Big<28>>::name = "32byte";
 
 template<> struct ReadableTypename<cl::sycl::vec<unsigned char, 1>> { static const char* name; };
 const char* ReadableTypename<cl::sycl::vec<unsigned char,  1>>::name = "vec<uint8:1>";

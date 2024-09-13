@@ -15,6 +15,7 @@ protected:
   BenchmarkArgs args;
 
   PrefetchedBuffer<DataT, 1> a_buf;
+  PrefetchedBuffer<DataT, 1> b_buf;
   PrefetchedBuffer<DataT, 1> output_buf;
 
 public:
@@ -24,6 +25,7 @@ public:
     size_t num_groups = (args.problem_size + args.local_size - 1) / args.local_size;
 
     output_buf.initialize(args.device_queue, s::range<1>(num_groups * args.local_size));
+    b_buf.initialize(args.device_queue, s::range<1>(num_groups * args.local_size));
 
     a_buf.initialize(args.device_queue, s::range<1>(1024));
     args.device_queue.submit([&](cl::sycl::handler& cgh) {
@@ -42,6 +44,7 @@ public:
     events.push_back(args.device_queue.submit([&](cl::sycl::handler& cgh) {
       auto out = output_buf.template get_access<s::access::mode::discard_write>(cgh);
       auto a_ = a_buf.template get_access<s::access::mode::read>(cgh);
+      auto b_ = b_buf.template get_access<s::access::mode::read_write>(cgh);
 
       cgh.parallel_for<MicroBenchGroupInclusiveScanKernel<DataT, Iterations>>(
           s::nd_range<1>{num_groups * args.local_size, args.local_size}, [=](cl::sycl::nd_item<1> item) {
@@ -49,8 +52,21 @@ public:
             size_t gid = item.get_global_linear_id();
             volatile DataT d = initialize_type<DataT>(0);
 
-            for(int i = Iterations; i >= 0; --i) {
-              d = s::inclusive_scan_over_group(g, a_[item.get_local_linear_id() + i % args.local_size], cl::sycl::plus<DataT>{});
+            for(int i = 1; i <= Iterations; ++i) {
+              const auto lid = g.get_local_linear_id();
+              b_[lid] = a_[item.get_local_linear_id()];
+              item.barrier();
+              if (g.leader()) {
+                for (auto i = 1ul; i < g.get_local_range().size(); ++i) {
+                  b_[i] = s::plus<DataT>{}(b_[i-1], b_[i]);
+                }
+              }
+              item.barrier();
+              auto result = b_[lid];
+              item.barrier();
+
+              d = result;
+
               out[gid] = d;
             }
           });

@@ -7,7 +7,7 @@ namespace s = cl::sycl;
 template <typename DataT, size_t Iterations>
 class MicroBenchShuffleKernel;
 
-template <typename DataT, size_t Iterations = 1000000>
+template <typename DataT, size_t Iterations = 100000>
 class MicroBenchShuffle {
 protected:
   BenchmarkArgs args;
@@ -37,7 +37,7 @@ public:
       cgh.parallel_for<MicroBenchShuffleKernel<DataT, Iterations>>(
           s::nd_range<1>{SgSize, SgSize}, [=](cl::sycl::nd_item<1> item) {
             auto sg = item.get_sub_group();
-             volatile DataT d{};
+             DataT d{};
              for(size_t i = 0; i < Iterations; ++i) {
                 d = s::select_from_group(sg, a_[item.get_local_linear_id()], sg.get_local_linear_id()+2);
                if (sg.leader())
@@ -71,5 +71,10 @@ int main(int argc, char** argv) {
   app.run<MicroBenchShuffle<long long>>();
   app.run<MicroBenchShuffle<float>>();
   app.run<MicroBenchShuffle<double>>();
+#ifdef SMCP
+  app.run<MicroBenchShuffle<Byte16>>();
+  app.run<MicroBenchShuffle<Byte32>>();
+  app.run<MicroBenchShuffle<Byte64>>();
+#endif
   return 0;
 }

@@ -17,7 +17,7 @@ protected:
 public:
   explicit MicroBenchVoteAll(const BenchmarkArgs& _args) : args(_args) {}
 
-  void setup() { output_buf.initialize(args.device_queue, s::range<1>(1)); }
+  void setup() { output_buf.initialize(args.device_queue, s::range<1>(Iterations)); }
 
   void run(std::vector<cl::sycl::event>& events) {
     size_t num_groups = (args.problem_size + args.local_size - 1) / args.local_size;
@@ -29,12 +29,10 @@ public:
             auto g = item.get_group();
             volatile DataT d{};
               for(size_t i = 0; i < Iterations; ++i) {
-                DataT x = initialize_type<DataT>(g.get_local_linear_id() < g.get_local_linear_range());
+                DataT x = initialize_type<DataT>(g.get_local_linear_id() + i < g.get_local_linear_range());
                 d = s::all_of_group(g, x);
+                out[i] = d;
               }
-
-            if (g.leader())
-              out[0] = d;
           });
     }));
   }
