@@ -69,7 +69,7 @@ endif()
 set(benchmarks
   group/matrix_multiply.cpp
   group/group_reduce.cpp
-        group/group_reduce2.cpp
+        group/group_reduce_upstream.cpp
         group/sg-shuffle.cpp
         group/sg-vote_all.cpp
         group/sg-inclusive_scan.cpp
@@ -77,7 +77,7 @@ set(benchmarks
         group/sg-shift_left.cpp
         group/vote_all.cpp
         group/group_inclusive_scan.cpp
-        group/group_inclusive_scan2.cpp
+        group/group_inclusive_scan_upstream.cpp
 
 )
 
