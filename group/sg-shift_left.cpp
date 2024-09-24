@@ -19,7 +19,7 @@ public:
   explicit MicroBenchShuffle(const BenchmarkArgs& _args) : args(_args) {}
 
   void setup() {
-    output_buf.initialize(args.device_queue, s::range<1>(1));
+    output_buf.initialize(args.device_queue, s::range<1>(32));
     a_buf.initialize(args.device_queue, s::range<1>(1024));
     using namespace cl::sycl::access;
     for (auto i = 0; i < 1024; ++i) {
@@ -37,11 +37,10 @@ public:
       cgh.parallel_for<MicroBenchShuffleKernel<DataT, Iterations>>(
           s::nd_range<1>{SgSize, SgSize}, [=](cl::sycl::nd_item<1> item) {
             auto sg = item.get_sub_group();
-            volatile DataT d;
+            DataT d;
              for(size_t i = 0; i < Iterations; ++i) {
                 d = s::shift_group_left(sg, a_[item.get_local_linear_id()], 4);
-                 if (sg.leader())
-                   out[0] = d;
+                out[sg.get_local_linear_id()] = d;
              }
           });
     }));

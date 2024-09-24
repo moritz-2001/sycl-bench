@@ -50,7 +50,7 @@ public:
           s::nd_range<1>{num_groups * args.local_size, args.local_size}, [=](cl::sycl::nd_item<1> item) {
             auto g = item.get_group();
             size_t gid = item.get_global_linear_id();
-            volatile DataT d = initialize_type<DataT>(0);
+            DataT d = initialize_type<DataT>(0);
 
             for(int i = 1; i <= Iterations; ++i) {
               const auto lid = g.get_local_linear_id();

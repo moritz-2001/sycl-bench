@@ -60,7 +60,6 @@ public:
 
                const size_t SG_SIZE = sg.get_local_linear_range();
 
-              volatile int res;
                for (auto i = 0; i < Iterations; ++i) {
                   DataT sum{};
                   for (auto kk = 0ul; kk < LOCAL_SIZE; kk += SG_SIZE) {
@@ -70,7 +69,6 @@ public:
                       }
                   }
                   out_[m][n] = sum;
-                  res = sum;
                }
           });
     }));
@@ -103,8 +101,8 @@ int main(int argc, char** argv) {
   BenchmarkApp app(argc, argv);
 
   app.run<MicroBenchMatrixMultiply<int>>();
-  app.run<MicroBenchMatrixMultiply<long long>>();
-  app.run<MicroBenchMatrixMultiply<float>>();
-  app.run<MicroBenchMatrixMultiply<double>>();
+  //app.run<MicroBenchMatrixMultiply<long long>>();
+  //app.run<MicroBenchMatrixMultiply<float>>();
+  //app.run<MicroBenchMatrixMultiply<double>>();
   return 0;
 }

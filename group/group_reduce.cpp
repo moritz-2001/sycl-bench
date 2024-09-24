@@ -41,7 +41,7 @@ public:
             auto g = item.get_group();
             auto sg = item.get_sub_group();
             size_t gid = item.get_global_linear_id();
-            volatile DataT d = initialize_type<DataT>(0);
+            DataT d = initialize_type<DataT>(0);
 
             for(int i = 0; i <= Iterations; ++i) {
               d = s::group_reduce(g, a_[item.get_local_linear_id()], s::plus<DataT>());

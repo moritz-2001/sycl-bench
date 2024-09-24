@@ -19,7 +19,7 @@ public:
   explicit MicroBenchShuffle(const BenchmarkArgs& _args) : args(_args) {}
 
   void setup() {
-    output_buf.initialize(args.device_queue, s::range<1>(1));
+    output_buf.initialize(args.device_queue, s::range<1>(32));
     a_buf.initialize(args.device_queue, s::range<1>(1024));
     using namespace cl::sycl::access;
     for (auto i = 0; i < 1024; ++i) {
@@ -40,9 +40,7 @@ public:
             DataT d;
              for(size_t i = 0; i < Iterations; ++i) {
                 d = s::inclusive_scan_over_group(sg, a_[sg.get_local_linear_id()], s::plus<DataT>());
-                if (sg.get_local_linear_id() == sg.get_local_linear_range()-1) {
-                  out[0] = d;
-                }
+                out[sg.get_local_linear_id()] = d;
              }
           });
     }));
@@ -54,9 +52,9 @@ public:
     auto res = (SgSize-1)*SgSize / 2;
     DataT expected = initialize_type<DataT>(res);
 
-    if(!compare_type(result[0], expected))
-      std::cout << type_to_string(expected) << ":" << type_to_string(result[0]) << std::endl;
-    return compare_type(result[0], expected);
+    if(!compare_type(result[SgSize-1], expected))
+      std::cout << type_to_string(expected) << ":" << type_to_string(result[SgSize-1]) << std::endl;
+    return compare_type(result[SgSize-1], expected);
   }
 
   static std::string getBenchmarkName() {

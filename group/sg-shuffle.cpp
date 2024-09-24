@@ -19,7 +19,7 @@ public:
   explicit MicroBenchShuffle(const BenchmarkArgs& _args) : args(_args) {}
 
   void setup() {
-    output_buf.initialize(args.device_queue, s::range<1>(1));
+    output_buf.initialize(args.device_queue, s::range<1>(32));
     a_buf.initialize(args.device_queue, s::range<1>(1024));
     using namespace cl::sycl::access;
     for (auto i = 0; i < 1024; ++i) {
@@ -40,8 +40,7 @@ public:
              DataT d{};
              for(size_t i = 0; i < Iterations; ++i) {
                 d = s::select_from_group(sg, a_[item.get_local_linear_id()], sg.get_local_linear_id()+2);
-               if (sg.leader())
-                 out[0] = d;
+                out[sg.get_local_linear_id()] = d;
              }
           });
     }));
