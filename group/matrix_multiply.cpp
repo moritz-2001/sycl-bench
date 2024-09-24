@@ -24,6 +24,7 @@ public:
   MicroBenchMatrixMultiply(const BenchmarkArgs& _args) : args(_args) {}
 
   void setup() {
+    auto SgSize = args.device_queue.get_device().get_info<s::info::device::sub_group_sizes>().at(0);
     output_buf.initialize(args.device_queue, s::range<2>(32, 32));
     a_buf.initialize(args.device_queue, s::range<2>(32, 32));
     b_buf.initialize(args.device_queue, s::range<2>(32, 32));

@@ -19,7 +19,7 @@ public:
   explicit MicroBenchShuffle(const BenchmarkArgs& _args) : args(_args) {}
 
   void setup() {
-    output_buf.initialize(args.device_queue, s::range<1>(32));
+    output_buf.initialize(args.device_queue, s::range<1>(SGSize));
     a_buf.initialize(args.device_queue, s::range<1>(1024));
     using namespace cl::sycl::access;
     for (auto i = 0; i < 1024; ++i) {
@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
 
   app.run<MicroBenchShuffle<int>>();
   app.run<MicroBenchShuffle<long long>>();
-  app.run<MicroBenchShuffle<float>>();
+  app.run<MicroBenchShuffle<float>>();////
   app.run<MicroBenchShuffle<double>>();
 #ifdef SMCP
   app.run<MicroBenchShuffle<Byte16>>();

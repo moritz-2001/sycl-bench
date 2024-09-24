@@ -19,7 +19,8 @@ public:
   explicit MicroBenchVoteAll(const BenchmarkArgs& _args) : args(_args) {}
 
   void setup() {
-    output_buf.initialize(args.device_queue, s::range<1>(32));
+    auto SgSize = args.device_queue.get_device().get_info<s::info::device::sub_group_sizes>().at(0);
+    output_buf.initialize(args.device_queue, s::range<1>(SgSize));
     a_buf.initialize(args.device_queue, s::range<1>(1024));
     using namespace cl::sycl::access;
     for (auto i = 0; i < 1024; ++i) {
