@@ -102,8 +102,8 @@ int main(int argc, char** argv) {
   BenchmarkApp app(argc, argv);
 
   app.run<MicroBenchMatrixMultiply<int>>();
-  //app.run<MicroBenchMatrixMultiply<long long>>();
-  //app.run<MicroBenchMatrixMultiply<float>>();
-  //app.run<MicroBenchMatrixMultiply<double>>();
+  app.run<MicroBenchMatrixMultiply<long long>>();
+  app.run<MicroBenchMatrixMultiply<float>>();
+  app.run<MicroBenchMatrixMultiply<double>>();
   return 0;
 }
