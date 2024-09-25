@@ -9,7 +9,7 @@ class MicroBenchGroupInclusiveScanKernel;
 /**
  * Microbenchmark benchmarking group_reduce
  */
-template <typename DataT, int Iterations = 10000>
+template <typename DataT, int Iterations = 1000>
 class MicroBenchGroupInclusiveScan {
 protected:
   BenchmarkArgs args;

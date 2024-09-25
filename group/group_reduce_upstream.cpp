@@ -9,7 +9,7 @@ class MicroBenchGroupReduceKernel;
 /**
  * Microbenchmark benchmarking group_reduce/aaaax
  */
-template <typename DataT, bool IsVector = false, int Iterations = 10000>
+template <typename DataT, bool IsVector = false, int Iterations = 1000>
 class MicroBenchGroupReduce {
 protected:
   BenchmarkArgs args;
