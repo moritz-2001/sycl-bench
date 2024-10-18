@@ -346,14 +346,7 @@ int main(int argc, char** argv)
 {
 
   BenchmarkApp app(argc, argv);
-
-  app.run< NBodyHierarchical<float> >();
-  app.run< NBodyHierarchical<double> >();
-
-  if(app.shouldRunNDRangeKernels()) {
-    app.run< NBodyNDRange<float> >();
-    app.run< NBodyNDRange<double> >();
-  }
+  app.run< NBodyNDRange<double> >();
 
   return 0;
 }
