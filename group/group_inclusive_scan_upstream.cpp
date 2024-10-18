@@ -40,14 +40,14 @@ public:
   }
 
   void run(std::vector<cl::sycl::event>& events) {
-    size_t num_groups = (args.problem_size + args.local_size - 1) / args.local_size;
     events.push_back(args.device_queue.submit([&](cl::sycl::handler& cgh) {
       auto out = output_buf.template get_access<s::access::mode::discard_write>(cgh);
       auto a_ = a_buf.template get_access<s::access::mode::read>(cgh);
       auto b_ = b_buf.template get_access<s::access::mode::read_write>(cgh);
 
+      // Writen for fixed size
       cgh.parallel_for<MicroBenchGroupInclusiveScanKernel<DataT, Iterations>>(
-          s::nd_range<1>{num_groups * args.local_size, args.local_size}, [=](cl::sycl::nd_item<1> item) {
+          s::nd_range<1>{1024, 1024}, [=](cl::sycl::nd_item<1> item) {
             auto g = item.get_group();
             size_t gid = item.get_global_linear_id();
             DataT d = initialize_type<DataT>(0);
