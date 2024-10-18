@@ -89,6 +89,8 @@ set(benchmarks
   polybench/mvt.cpp
   polybench/syr2k.cpp
   polybench/syrk.cpp
+  group/group_inclusive_scan_upstream.cpp
+  group/group_reduce_upstream.cpp
   #compiletime/compiletime.cpp
 )
 
